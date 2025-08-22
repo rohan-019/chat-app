@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { IUser } from "../types";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import Constants from "expo-constants";
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl;

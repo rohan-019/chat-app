@@ -16,12 +16,12 @@ const register = () => {
   const { loading, error } = useAuth();
   const dispatch = useAppDispatch();
   const [form, setForm] = React.useState({
-    displayName: "",
+    username: "",
     email: "",
     password: "",
   });
   const [errors, setErrors] = React.useState({
-    displayName: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -37,10 +37,10 @@ const register = () => {
   };
 
   const handleRegister = () => {
-    const { displayName, email, password } = form;
+    const { username, email, password } = form;
 
-    if (!displayName || displayName.trim().length === 0) {
-      setErrors((prev) => ({ ...prev, displayName: "Name is required" }));
+    if (!username || username.trim().length === 0) {
+      setErrors((prev) => ({ ...prev, username: "Name is required" }));
       return;
     }
 
@@ -54,7 +54,7 @@ const register = () => {
       return;
     }
 
-    dispatch(registerUser({ displayName, email, password }));
+    dispatch(registerUser({ username, email, password }));
   };
 
   React.useEffect(() => {
@@ -74,15 +74,15 @@ const register = () => {
         },
       ]}
     >
-      <Typography variant="h1">
-        Welcome to{" "}
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Typography variant="h1">Welcome to </Typography>
         <Typography
           variant="h1"
           style={{ color: themes[mode].colors.highlight }}
         >
           ChatApp
         </Typography>
-      </Typography>
+      </View>
 
       <View style={{ height: 10 }} />
 
@@ -94,16 +94,16 @@ const register = () => {
 
       <FormInput
         placeholder="Name"
-        value={form.displayName}
-        onChangeText={(text) => handleChange("displayName", text)}
-        status={errors.displayName ? "error" : ""}
+        value={form.username}
+        onChangeText={(text) => handleChange("username", text)}
+        status={errors.username ? "error" : ""}
       />
-      {errors.displayName && (
+      {errors.username && (
         <Typography
           variant="body2"
           style={{ color: themes[mode].colors.errorColor, marginTop: 5 }}
         >
-          {errors.displayName}
+          {errors.username}
         </Typography>
       )}
 
@@ -165,7 +165,7 @@ const register = () => {
         borderWidth={0}
         loading={loading}
         disabled={
-          errors.displayName || errors.email || errors.password ? true : false
+          errors.username || errors.email || errors.password ? true : false
         }
       />
 

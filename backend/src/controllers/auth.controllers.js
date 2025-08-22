@@ -6,13 +6,13 @@ import createSendToken from "../utils/createSendToken.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
 export const register = catchAsync(async (req, res, next) => {
-  const { displayName, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   if (
-    !displayName ||
+    !username ||
     !email ||
     !password ||
-    !displayName.trim() ||
+    !username.trim() ||
     !email.trim() ||
     !password.trim()
   ) {
@@ -30,7 +30,7 @@ export const register = catchAsync(async (req, res, next) => {
   const photoURL = `https://api.dicebear.com/6.x/big-ears-neutral/png?seed=${email}`;
 
   const newUser = await User.create({
-    displayName,
+    username,
     email,
     photoURL,
     hash: hash.hash,

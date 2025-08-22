@@ -19,7 +19,7 @@ import { useAppDispatch } from "../../../hooks/useReduce";
 import { useSocket } from "../../../context/socket";
 import useAuth from "../../../hooks/useAuth";
 import { IChat, IMessage, IUser } from "../../../types";
-import axios from "axios";
+import axios from "../../../utils/axiosConfig";
 import Constants from "expo-constants";
 
 const Chat = () => {
@@ -91,7 +91,7 @@ const Chat = () => {
         text,
         chatId: _id,
         senderId: user._id,
-        senderDisplayName: user.displayName,
+        senderDisplayName: user.username,
         receiverId: chat?.users.find((u) => u !== user._id),
         createdAt: new Date().toISOString(),
       });
@@ -136,13 +136,17 @@ const Chat = () => {
   // fetch chat
 
   React.useEffect(() => {
-    fetchChat(_id as string);
+    if (_id && typeof _id === 'string') {
+      fetchChat(_id);
+    }
   }, [_id]);
 
   // fetch messages
 
   React.useEffect(() => {
-    fetchMessages(_id as string);
+    if (_id && typeof _id === 'string') {
+      fetchMessages(_id);
+    }
   }, [_id]);
 
   // check if receiver is online or not
@@ -170,9 +174,9 @@ const Chat = () => {
       ]}
     >
       <ChatHeader
-        chatName={!loadingChat && chat ? chat.chatName : "Loading..."}
+        chatName={!loadingChat && chat ? chat.chatName || "Unknown" : "Loading..."}
         chatImage={
-          !loadingChat && chat ? chat.chatImage : "https://picsum.photos/200"
+          !loadingChat && chat ? chat.chatImage || "https://picsum.photos/200" : "https://picsum.photos/200"
         }
         online={!loadingChat && chat ? online : false}
       />

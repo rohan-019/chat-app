@@ -63,15 +63,15 @@ const login = () => {
         },
       ]}
     >
-      <Typography variant="h1">
-        Welcome to{" "}
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Typography variant="h1">Welcome to </Typography>
         <Typography
           variant="h1"
           style={{ color: themes[mode].colors.highlight }}
         >
           ChatApp
         </Typography>
-      </Typography>
+      </View>
 
       <View style={{ height: 10 }} />
 

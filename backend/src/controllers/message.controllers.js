@@ -27,7 +27,7 @@ export const sendMessage = catchAsync(async (req, res, next) => {
       ...message._doc,
       sender: {
         _id: req.user._id,
-        displayName: req.user.displayName,
+        username: req.user.username,
       },
     },
   });
@@ -43,7 +43,7 @@ export const getMessagesByChatId = catchAsync(async (req, res, next) => {
   const messages = await Message.find({ chat: chatId })
     .populate({
       path: "sender",
-      select: "displayName",
+      select: "username",
     })
     .sort({ createdAt: -1 })
     .skip(skip)

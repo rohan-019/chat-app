@@ -35,16 +35,20 @@ const welcome = () => {
 
       <View style={{ height: 15 }} />
 
-      <Typography variant="body1" style={{ textAlign: "center" }}>
-        Read our{" "}
+      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+        <Typography variant="body1" style={{ textAlign: "center" }}>
+          Read our{" "}
+        </Typography>
         <Typography variant="body1" style={{ color: themes[mode].colors.link }}>
           Privacy Policy
         </Typography>
-        . Tap "Agree and continue" to accept the{" "}
+        <Typography variant="body1" style={{ textAlign: "center" }}>
+          . Tap "Agree and continue" to accept the{" "}
+        </Typography>
         <Typography variant="body1" style={{ color: themes[mode].colors.link }}>
           Terms of Service
         </Typography>
-      </Typography>
+      </View>
 
       <View style={{ height: 20 }} />
 

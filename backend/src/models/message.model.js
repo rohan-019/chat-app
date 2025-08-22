@@ -16,6 +16,27 @@ const messageSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
     },
+
+    delivered: {
+      type: Boolean,
+      default: false,
+    },
+
+    read: {
+      type: Boolean,
+      default: false,
+    },
+
+    readBy: [{
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      readAt: {
+        type: Date,
+        default: Date.now,
+      },
+    }],
   },
   { timestamps: true }
 );

@@ -15,7 +15,7 @@ import Typography from "../../../components/Typography";
 import { useRouter } from "expo-router";
 import useAuth from "../../../hooks/useAuth";
 import { IChat } from "../../../types";
-import axios from "axios";
+import axios from "../../../utils/axiosConfig";
 import Constants from "expo-constants";
 
 export default function Chats() {

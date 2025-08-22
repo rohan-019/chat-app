@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import Constants from "expo-constants";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUser } from "../types";
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl;
@@ -27,11 +28,11 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (
     {
-      displayName,
+      username,
       email,
       password,
     }: {
-      displayName: string;
+      username: string;
       email: string;
       password: string;
     },
@@ -41,7 +42,7 @@ export const registerUser = createAsyncThunk(
       const { data } = await axios.post(
         `${apiUrl}/auth/register`,
         {
-          displayName,
+          username,
           email,
           password,
         },
@@ -51,6 +52,11 @@ export const registerUser = createAsyncThunk(
           },
         }
       );
+
+      // Store token in AsyncStorage for register
+      if (data.token) {
+        await AsyncStorage.setItem('token', data.token);
+      }
 
       return data.user as IUser;
     } catch (error: any) {
@@ -87,6 +93,11 @@ export const loginUser = createAsyncThunk(
         }
       );
 
+      // Store token in AsyncStorage for login
+      if (data.token) {
+        await AsyncStorage.setItem('token', data.token);
+      }
+
       return data.user as IUser;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
@@ -105,6 +116,9 @@ export const logoutUser = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
+
+      // Remove token from AsyncStorage
+      await AsyncStorage.removeItem('token');
 
       return data.user as IUser;
     } catch (error: any) {
@@ -128,6 +142,26 @@ export const loadProfile = createAsyncThunk(
       return data.user as IUser;
     } catch (error: any) {
       return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// Check if user is authenticated on app startup
+export const checkAuthStatus = createAsyncThunk(
+  "auth/checkAuthStatus",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        return rejectWithValue('No token found');
+      }
+      
+      const { data } = await axios.get(`${apiUrl}/auth/profile`);
+      return data.user as IUser;
+    } catch (error: any) {
+      // Remove invalid token
+      await AsyncStorage.removeItem('token');
+      return rejectWithValue(error.response?.data?.message || 'Authentication failed');
     }
   }
 );
@@ -202,6 +236,20 @@ export const authSlice = createSlice({
       state.user = action.payload;
     });
     builder.addCase(loadProfile.rejected, (state) => {
+      state.loadingProfile = false;
+      state.isAuth = false;
+      state.user = null;
+    });
+
+    builder.addCase(checkAuthStatus.pending, (state) => {
+      state.loadingProfile = true;
+    });
+    builder.addCase(checkAuthStatus.fulfilled, (state, action) => {
+      state.loadingProfile = false;
+      state.isAuth = true;
+      state.user = action.payload;
+    });
+    builder.addCase(checkAuthStatus.rejected, (state) => {
       state.loadingProfile = false;
       state.isAuth = false;
       state.user = null;

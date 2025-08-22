@@ -3,6 +3,8 @@ import {
   TouchableNativeFeedback,
   View,
   ActivityIndicator,
+  Platform,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import themes from "../constants/themes";
@@ -11,7 +13,7 @@ import { useRouter } from "expo-router";
 import Avatar from "./Avatar";
 import Typography from "./Typography";
 import { IChat, IUser } from "../types";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import Constants from "expo-constants";
 
 type IUserListItem = {
@@ -61,13 +63,10 @@ const UserListItem = (props: IUserListItem) => {
   }, [createdChat]);
 
   return (
-    <TouchableNativeFeedback
-      background={TouchableNativeFeedback.Ripple(
-        themes[mode].colors.chatListItemRipple,
-        false
-      )}
+    <TouchableOpacity
       onPress={goToChat}
       disabled={loading}
+      activeOpacity={0.7}
     >
       <View
         style={[
@@ -82,7 +81,7 @@ const UserListItem = (props: IUserListItem) => {
 
         <View style={styles.center}>
           <Typography variant="h3" textProps={{ numberOfLines: 1 }}>
-            {user.displayName}
+            {user.username}
           </Typography>
 
           <View style={{ height: 2 }} />
@@ -101,7 +100,7 @@ const UserListItem = (props: IUserListItem) => {
           )}
         </View>
       </View>
-    </TouchableNativeFeedback>
+    </TouchableOpacity>
   );
 };
 

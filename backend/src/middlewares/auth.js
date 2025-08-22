@@ -5,7 +5,12 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { removeHash } from "../utils/password.js";
 
 export const isAuthenticatedUser = catchAsync(async (req, res, next) => {
-  const token = req.cookies.jwttoken;
+  let token = req.cookies.jwttoken;
+
+  // Also check Authorization header if cookie is not present
+  if (!token && req.headers.authorization) {
+    token = req.headers.authorization.replace('Bearer ', '');
+  }
 
   if (!token) {
     return next(new ErrorHandler("Please login to access the resource", 401));

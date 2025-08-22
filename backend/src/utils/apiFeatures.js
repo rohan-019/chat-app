@@ -8,21 +8,41 @@ class APIFeatures {
   search() {
     const keyword = this.queryString.keyword
       ? {
-          displayName: {
-            $regex: this.queryString.keyword,
+          $or: [
+            {
+              username: {
+                $regex: this.queryString.keyword,
+                $options: "i",
+              },
+            },
+            {
+              email: {
+                $regex: this.queryString.keyword,
+                $options: "i",
+              },
+            },
+          ],
+        }
+      : {};
+
+    // Handle email-specific search
+    const emailSearch = this.queryString.email
+      ? {
+          email: {
+            $regex: this.queryString.email,
             $options: "i",
           },
         }
       : {};
 
-    this.query = this.query.find({ ...keyword });
+    this.query = this.query.find({ ...keyword, ...emailSearch });
 
     return this;
   }
 
   filter() {
     const queryObj = { ...this.queryString };
-    const excludedFields = ["keyword", "page", "sort", "limit", "fields"];
+    const excludedFields = ["keyword", "email", "page", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
     // 1B) Advanced filtering

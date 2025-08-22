@@ -1,37 +1,39 @@
-export interface IUser {
+export type IUser = {
   _id: string;
-  displayName: string;
+  username: string;
   email: string;
   photoURL: string;
-  role: string;
+  about: string;
+  role: "user" | "admin";
   createdAt: string;
-}
+  updatedAt: string;
+};
 
-export interface IChat {
+export type IChat = {
   _id: string;
-  chatName: string;
-  chatImage: string;
-  type: string;
-  lastMessage?: {
-    _id: string;
-    text: string;
-    createdAt: string;
-    sender: {
-      _id: string;
-      displayName: string;
-    };
-  };
-  users: [];
+  chatName?: string;
+  chatImage?: string;
+  type: "private" | "group";
+  users: string[];
+  lastMessage?: IMessage;
   createdAt: string;
-}
+  updatedAt: string;
+};
 
-export interface IMessage {
+export type IMessage = {
   _id: string;
   text: string;
-  chat: string;
   sender: {
     _id: string;
-    displayName: string;
+    username: string;
   };
+  chat: string;
+  delivered: boolean;
+  read: boolean;
+  readBy: Array<{
+    user: string;
+    readAt: string;
+  }>;
   createdAt: string;
-}
+  updatedAt: string;
+};

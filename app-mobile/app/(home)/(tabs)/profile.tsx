@@ -32,7 +32,7 @@ export default function Profile() {
 
           <View style={{ height: 10 }} />
 
-          <Typography variant="h3">{user.displayName}</Typography>
+          <Typography variant="h3">{user.username}</Typography>
 
           <View style={{ height: 10 }} />
 

@@ -3,23 +3,26 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { Chat, User, Message } from "../models/index.js";
 
 export const createPrivateChat = catchAsync(async (req, res, next) => {
-  const { userId } = req.body;
+  const { userId, email, username } = req.body;
 
-  const usersId = [req.user._id, userId];
+  let otherUser;
 
-  if (!usersId || usersId.length === 0) {
-    return next(new ErrorHandler("Please provide usersId", 400));
+  // Find user by userId, email, or username
+  if (userId) {
+    otherUser = await User.findById(userId);
+  } else if (email) {
+    otherUser = await User.findOne({ email: email.toLowerCase() });
+  } else if (username) {
+    otherUser = await User.findOne({ username: username.toLowerCase() });
+  } else {
+    return next(new ErrorHandler("Please provide userId, email, or username", 400));
   }
-
-  if (usersId.length !== 2) {
-    return next(new ErrorHandler("Please provide 2 usersId", 400));
-  }
-
-  const otherUser = await User.findById(userId);
 
   if (!otherUser) {
     return next(new ErrorHandler("User not found", 404));
   }
+
+  const usersId = [req.user._id, otherUser._id];
 
   const chat = await Chat.findOne({
     users: { $all: usersId },
@@ -79,7 +82,7 @@ export const getChats = catchAsync(async (req, res, next) => {
     const lastMessage = await Message.find({ chat: chat._id })
       .populate({
         path: "sender",
-        select: "displayName",
+        select: "username",
       })
       .sort({ createdAt: -1 })
       .limit(1);
@@ -93,7 +96,7 @@ export const getChats = catchAsync(async (req, res, next) => {
 
       const otherUser = await User.findById(otherUserId);
 
-      chat.chatName = otherUser.displayName;
+      chat.chatName = otherUser.username;
       chat.chatImage = otherUser.photoURL;
 
       return chat;
@@ -139,7 +142,7 @@ export const getChat = catchAsync(async (req, res, next) => {
       return next(new ErrorHandler("Chat not found", 404));
     }
 
-    chat.chatName = otherUser.displayName;
+    chat.chatName = otherUser.username;
     chat.chatImage = otherUser.photoURL;
   }
 

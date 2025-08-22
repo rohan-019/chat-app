@@ -1,4 +1,4 @@
-import { TouchableNativeFeedback, StyleSheet, View, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import React from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -26,12 +26,9 @@ const ChatListItem = (props: IChatListItem) => {
   };
 
   return (
-    <TouchableNativeFeedback
-      background={TouchableNativeFeedback.Ripple(
-        themes[mode].colors.chatListItemRipple,
-        false
-      )}
+    <TouchableOpacity
       onPress={goToChat}
+      activeOpacity={0.7}
     >
       <View
         style={[
@@ -42,7 +39,7 @@ const ChatListItem = (props: IChatListItem) => {
           },
         ]}
       >
-        <Avatar uri={chat.chatImage} size={48} />
+        <Avatar uri={chat.chatImage || ""} size={48} />
 
         <View style={styles.center}>
           <Typography variant="h3" textProps={{ numberOfLines: 1 }}>
@@ -70,7 +67,7 @@ const ChatListItem = (props: IChatListItem) => {
           )}
         </View>
       </View>
-    </TouchableNativeFeedback>
+    </TouchableOpacity>
   );
 };
 

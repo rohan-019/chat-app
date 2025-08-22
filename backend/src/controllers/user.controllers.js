@@ -34,3 +34,24 @@ export const getUser = catchAsync(async (req, res, next) => {
     user,
   });
 });
+
+export const findUserByEmail = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new ErrorHandler("Email is required", 400));
+  }
+
+  const user = await User.findOne({ email: email.toLowerCase() });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found with this email", 404));
+  }
+
+  const userWithoutHash = removeHash(user);
+
+  res.status(200).json({
+    success: true,
+    user: userWithoutHash,
+  });
+});
