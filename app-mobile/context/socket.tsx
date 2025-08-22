@@ -8,9 +8,12 @@ type IOnlineUser = {
   socketId: string;
 };
 
-const wsUrl = Constants.expoConfig?.extra?.wsUrl;
+const wsUrl = Constants.expoConfig?.extra?.wsUrl || "http://localhost:5000";
 
-export const socket = io(wsUrl);
+export const socket = io(wsUrl, {
+  transports: ['websocket', 'polling'],
+  timeout: 20000,
+});
 
 export const socketContext = React.createContext({
   socket,
@@ -26,11 +29,36 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [onlineUsers, setOnlineUsers] = React.useState<IOnlineUser[]>([]);
 
   React.useEffect(() => {
-    if (user) socket.emit("addUser", user._id);
+    // Connection event listeners
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
+
+    if (user) {
+      console.log("Adding user to socket:", user._id);
+      socket.emit("addUser", user._id);
+    }
 
     socket.on("getUsers", (users) => {
+      console.log("Received online users:", users);
       setOnlineUsers(users);
     });
+
+    // Cleanup listeners
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("connect_error");
+      socket.off("getUsers");
+    };
   }, [user]);
 
   const value = {

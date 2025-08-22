@@ -122,7 +122,27 @@ export const logoutUser = createAsyncThunk(
 
       return data.user as IUser;
     } catch (error: any) {
-      return rejectWithValue(error.response.data.message);
+      // Even if the API call fails, clear local storage
+      await AsyncStorage.removeItem('token');
+      return rejectWithValue(error.response?.data?.message || 'Logout failed');
+    }
+  }
+);
+
+// Clear all authentication data (for debugging/reset purposes)
+export const clearAuthData = createAsyncThunk(
+  "auth/clearAuthData",
+  async (_, { rejectWithValue }) => {
+    try {
+      // Clear token from AsyncStorage
+      await AsyncStorage.removeItem('token');
+      
+      // Clear any other auth-related storage
+      await AsyncStorage.removeItem('persist:root');
+      
+      return null;
+    } catch (error: any) {
+      return rejectWithValue('Failed to clear auth data');
     }
   }
 );
@@ -253,6 +273,20 @@ export const authSlice = createSlice({
       state.loadingProfile = false;
       state.isAuth = false;
       state.user = null;
+    });
+
+    builder.addCase(clearAuthData.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(clearAuthData.fulfilled, (state) => {
+      state.loading = false;
+      state.isAuth = false;
+      state.user = null;
+      state.error = null;
+    });
+    builder.addCase(clearAuthData.rejected, (state) => {
+      state.loading = false;
+      state.error = 'Failed to clear authentication data';
     });
   },
 });

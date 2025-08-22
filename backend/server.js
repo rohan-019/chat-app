@@ -7,7 +7,7 @@ connectDB();
 
 // Handling uncaught error
 process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log("UNCAUGHT EXCEPTION! Shutting down...");
   console.log(err.name, err.message);
   process.exit(1);
 });
@@ -24,7 +24,7 @@ const server = app.listen(port, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:19000",
+    origin: ["http://localhost:19000", "http://localhost:19006", "http://localhost:3000"],
     credentials: true,
   },
 });
@@ -197,7 +197,7 @@ io.on("connection", (socket) => {
 
 // Unhandled Promise Rejection
 process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
+  console.log("UNHANDLED REJECTION! Shutting down...");
   console.log(err.name, err.message);
   server.close(() => {
     process.exit(1);
@@ -206,8 +206,8 @@ process.on("unhandledRejection", (err) => {
 
 // SIGTERM is a signal that is sent to a process to tell it to terminate.
 process.on("SIGTERM", () => {
-  console.log("👋 SIGTERM RECEIVED. Shutting down gracefully");
+  console.log(" SIGTERM RECEIVED. Shutting down gracefully");
   server.close(() => {
-    console.log("💥 Process terminated!");
+    console.log(" Process terminated!");
   });
 });

@@ -87,13 +87,14 @@ const Chat = () => {
   const handleSendMessage = async () => {
     try {
       setSendingMessage(true);
-      socket.emit("sendMessage", {
+      
+      // Fix: Use correct socket event name that matches backend
+      socket.emit("message:send", {
         text,
         chatId: _id,
         senderId: user._id,
         senderDisplayName: user.username,
         receiverId: chat?.users.find((u) => u !== user._id),
-        createdAt: new Date().toISOString(),
       });
 
       const response = await axios.post(
@@ -114,9 +115,15 @@ const Chat = () => {
   // get message
 
   React.useEffect(() => {
-    socket.on("getMessage", (message: IMessage) => {
+    // Fix: Use correct socket event name that matches backend
+    socket.on("message:new", (message: IMessage) => {
       setArrivedMessage(message);
     });
+
+    // Cleanup listener on unmount
+    return () => {
+      socket.off("message:new");
+    };
   }, []);
 
   // add message to messages
@@ -146,6 +153,18 @@ const Chat = () => {
   React.useEffect(() => {
     if (_id && typeof _id === 'string') {
       fetchMessages(_id);
+    }
+  }, [_id]);
+
+  // Join chat room when component mounts
+  React.useEffect(() => {
+    if (_id && typeof _id === 'string') {
+      socket.emit("joinChat", _id);
+      
+      // Leave chat room when component unmounts
+      return () => {
+        socket.emit("leaveChat", _id);
+      };
     }
   }, [_id]);
 

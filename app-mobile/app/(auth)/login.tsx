@@ -8,7 +8,7 @@ import FormInput from "../../components/FormInput";
 import { Octicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import Button from "../../components/Button";
-import { clearError, loginUser } from "../../redux/authSlice";
+import { clearError, loginUser, clearAuthData } from "../../redux/authSlice";
 import useAuth from "../../hooks/useAuth";
 
 const login = () => {
@@ -44,6 +44,10 @@ const login = () => {
     }
 
     dispatch(loginUser({ email, password }));
+  };
+
+  const handleClearAuthData = () => {
+    dispatch(clearAuthData());
   };
 
   React.useEffect(() => {
@@ -163,7 +167,22 @@ const login = () => {
         </Typography>
       )}
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 20 }} />
+
+      {/* Debug/Reset Button */}
+      <Button
+        title="Clear Stored Login Data"
+        onPress={handleClearAuthData}
+        backgroundColor={themes[mode].colors.errorColor}
+        fontColor="white"
+        borderWidth={0}
+        buttonStyle={{
+          height: 35,
+          marginBottom: 10,
+        }}
+      />
+
+      <View style={{ height: 10 }} />
 
       <Typography
         variant="body1"

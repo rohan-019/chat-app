@@ -8,7 +8,7 @@ import { setMode } from "../redux/uiSlice";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-gesture-handler";
 import useAuth from "../hooks/useAuth";
-import { loadProfile } from "../redux/authSlice";
+import { checkAuthStatus } from "../redux/authSlice";
 import { PersistGate } from "redux-persist/integration/react";
 
 export {
@@ -43,7 +43,7 @@ function RootLayoutNav() {
   }, [colorScheme]);
 
   useEffect(() => {
-    dispatch(loadProfile());
+    dispatch(checkAuthStatus());
   }, []);
 
   useEffect(() => {
